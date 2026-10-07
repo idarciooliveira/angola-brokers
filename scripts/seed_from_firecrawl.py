@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """One-off seed: turns the raw scrapes in .firecrawl/ and the BRK table in prototypes/painel.html into data/*.jsonl.
-Daily updates will replace this with a scraper that writes the same record shapes (see data/README.md)."""
+Daily updates will replace this with a scraper that writes the same record shapes (see README.md)."""
 import json, re, subprocess, datetime as dt
 from pathlib import Path
 
