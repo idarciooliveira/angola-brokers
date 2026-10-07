@@ -1,5 +1,7 @@
 <script lang="ts">
+	import { logoPath } from '#lib/brokers';
 	import Bars from '#lib/ui/Bars.svelte';
+	import BrokerLogo from '#lib/ui/BrokerLogo.svelte';
 	import Card from '#lib/ui/Card.svelte';
 	import Chip from '#lib/ui/Chip.svelte';
 	import ScrollTable from '#lib/ui/ScrollTable.svelte';
@@ -159,7 +161,7 @@
 			<tbody>
 				{#each membersOfYear.rows as m (m.member)}
 					<tr>
-						<td>{m.name}</td>
+						<td><BrokerLogo src={logoPath(m.member)} name={m.name} /></td>
 						<td class="r num">{formatNumber(m.accounts)}</td>
 						<td class="r num">{formatPct(m.accounts_share_pct)}</td>
 						<td class="r num">{formatNumber(m.custody_mm_kz, 2)}</td>
