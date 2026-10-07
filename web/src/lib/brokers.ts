@@ -29,3 +29,11 @@ export function brokerSlug(name: string): string {
 		.replace(/[^a-z0-9]+/g, '-')
 		.replace(/^-|-$/g, '');
 }
+
+/** Nome curto para gráficos e resumos: "BFA Capital Markets" vira "BFA CM". */
+export function shortBrokerName(name: string): string {
+	return name
+		.replace(' Capital Partners', '')
+		.replace(' Capital Markets', ' CM')
+		.replace('Distribuidora ', '');
+}
