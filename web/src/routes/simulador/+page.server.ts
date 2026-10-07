@@ -1,4 +1,4 @@
-import { brokerSlug } from '#lib/brokers';
+import { BROKER_MEMBER, brokerSlug, logoPath } from '#lib/brokers';
 import { isCurrentPricelist, purchaseCost } from '#lib/fees';
 import { loadLatestDaily, loadPricelists } from '#lib/server/data';
 
@@ -24,6 +24,7 @@ export function load() {
 		.map(({ p }) => ({
 			slug: brokerSlug(p.broker),
 			broker: p.broker,
+			logo: logoPath(BROKER_MEMBER[p.broker]),
 			pct_public_debt_secondary: p.pct_public_debt_secondary,
 			min_kz: p.min_kz,
 			extra_fees: p.extra_fees,
