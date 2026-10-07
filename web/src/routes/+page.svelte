@@ -1,17 +1,24 @@
 <script lang="ts">
-	import BarChart from '#lib/charts/BarChart.svelte';
-	import ColumnChart from '#lib/charts/ColumnChart.svelte';
+	import Bars from '#lib/ui/Bars.svelte';
 	import Card from '#lib/ui/Card.svelte';
 	import Chip from '#lib/ui/Chip.svelte';
 	import ScrollTable from '#lib/ui/ScrollTable.svelte';
+	import SectionTitle from '#lib/ui/SectionTitle.svelte';
 	import SourceNote from '#lib/ui/SourceNote.svelte';
 	import Stat from '#lib/ui/Stat.svelte';
-	import { formatDate, formatKz, formatNumber, formatPct, formatSignedPct } from '#lib/format';
+	import { formatDate, formatNumber, formatPct, formatSignedPct } from '#lib/format';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
 	const source = $derived(`BODIVA, fecho de ${formatDate(data.date)}`);
+	const compare = $derived(
+		data.previousYear
+			? data.totalBi > data.previousYear.totalBi
+				? `, mais do que em todo o ano de ${data.previousYear.period}`
+				: `, contra Kz ${formatNumber(data.previousYear.totalBi, 1)} biliões em todo o ano de ${data.previousYear.period}`
+			: ''
+	);
 </script>
 
 <svelte:head>
@@ -20,29 +27,52 @@
 
 <p class="crumb">Mercado de capitais de Angola</p>
 <h1>O que se passa na BODIVA</h1>
-<p class="lede">A bolsa de Angola, em poucos números. Último fecho: {formatDate(data.date)}.</p>
+<p class="lede">A bolsa de Angola, em poucos números. O resto está nas outras secções.</p>
 
+<div class="say">
+	<span class="tag">Resumo de hoje</span>
+	<p>
+		<b>{data.fallers} das {data.stocks.length} acções desceram</b> na última sessão{#if data.worst},
+			e {data.worst.code} caiu mais, {formatSignedPct(data.worst.change)}{/if}.
+		{#if data.bestBill && data.worstBill && data.bestBill.days !== data.worstBill.days}
+			Os <b>Bilhetes do Tesouro a {data.bestBill.days} dias pagam {formatPct(data.bestBill.ratePct, 1)}</b>
+			ao ano, a melhor taxa do dia, mas os de {data.worstBill.days} dias pagam só
+			{formatPct(data.worstBill.ratePct)}.
+		{/if}
+		Em {data.period} já se negociaram <b>Kz {formatNumber(data.totalBi, 1)} biliões</b>{compare}.
+	</p>
+</div>
+
+<SectionTitle title="Mercado agora" />
 <section class="kpis" aria-label="Números principais">
 	<Stat
-		label="Bilhete do Tesouro a 364 dias"
-		value={formatPct(data.bt364)}
-		hint="Taxa anual, cópia em biccorretora.ao"
-	/>
-	<Stat
-		label="Total negociado em {data.period}"
+		label="Negociado em {data.period}"
 		value="Kz {formatNumber(data.totalBi, 2)} bi"
-		hint="Até {formatDate(data.totalsAsOf)}"
+		hint="até {formatDate(data.totalsAsOf)}"
 	/>
-	<Stat label="Contas de investidor" value={formatNumber(data.accounts)} hint="Todas as corretoras" />
 	<Stat
-		label="Acção que mais mexeu"
-		value={data.mover?.code ?? '—'}
-		hint={data.mover ? `${formatSignedPct(data.mover.change)} no dia` : undefined}
+		label="Contas de investidores"
+		value={formatNumber(data.accounts)}
+		hint={data.accountsLeaders
+			? `${data.accountsLeaders.names[0]} e ${data.accountsLeaders.names[1]} têm ${formatNumber(data.accountsLeaders.sharePct)}%`
+			: 'Todas as corretoras'}
+	/>
+	<Stat
+		label="Bilhete do Tesouro, 1 ano"
+		value={formatPct(data.bt364)}
+		hint="ao ano, antes de imposto"
+	/>
+	<Stat
+		label="Corretora mais barata"
+		value={data.cheapest ? `~${formatPct(data.cheapest.pct)}` : '—'}
+		hint={data.cheapest
+			? `Kz ${formatNumber(data.cheapest.amount / 1_000_000)} M em OT, ${data.cheapest.name}`
+			: undefined}
 	/>
 </section>
 
-<h2>Acções cotadas</h2>
-<Card title="Preço e variação do dia" subtitle="Preço em kwanzas" {source}>
+<SectionTitle title="Acções cotadas" hint="Preço em kwanzas" />
+<Card {source}>
 	<ScrollTable caption="Acções cotadas na BODIVA">
 		<thead>
 			<tr><th>Acção</th><th class="r">Preço</th><th class="r">Variação</th></tr>
@@ -51,7 +81,7 @@
 			{#each data.stocks as s (s.code)}
 				<tr>
 					<td><strong>{s.code}</strong> <span class="mute">{s.name}</span></td>
-					<td class="r num">{formatKz(s.price)}</td>
+					<td class="r num">{formatNumber(s.price)}</td>
 					<td class="r"><Chip value={s.change} /></td>
 				</tr>
 			{/each}
@@ -75,13 +105,12 @@
 		subtitle="Biliões de kwanzas. {data.period} vai só até {formatDate(data.totalsAsOf)}."
 		source="BODIVA, dashboard estatístico"
 	>
-		<ColumnChart
-			ariaLabel="Total negociado por ano, em biliões de kwanzas"
+		<Bars
 			items={data.years.map((y) => ({
-				label: y.label,
+				label: y.partial ? `${y.label} (parcial)` : y.label,
 				value: y.value,
 				valueLabel: formatNumber(y.value, 2),
-				partial: y.partial
+				alt: !y.partial
 			}))}
 		/>
 	</Card>
@@ -90,8 +119,7 @@
 		subtitle="Mil milhões de kwanzas negociados."
 		source="BODIVA, dashboard estatístico"
 	>
-		<BarChart
-			ariaLabel="Cinco corretoras com mais volume, em mil milhões de kwanzas"
+		<Bars
 			items={data.topBrokers.map((b) => ({
 				label: b.name,
 				value: b.volume,
@@ -99,6 +127,12 @@
 			}))}
 		/>
 	</Card>
+</div>
+
+<div class="go">
+	<a class="pill" href="/mercado">Ver preços →</a>
+	<a class="pill pri" href="/corretoras">Comparar corretoras →</a>
+	<a class="pill" href="/simulador">Simular um investimento →</a>
 </div>
 
 <style>
@@ -117,21 +151,71 @@
 		margin-top: 10px;
 		font-size: 15px;
 	}
-	h2 {
-		font-size: 26px;
-		margin: 44px 0 14px;
+	.say {
+		max-width: 760px;
+		margin-top: 22px;
+		padding: 22px 24px;
+		border: 1px solid var(--line);
+		border-radius: 10px;
+		background: #fff;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+	}
+	.tag {
+		display: inline-block;
+		margin-bottom: 12px;
+		padding: 3px 12px;
+		border-radius: 99px;
+		background: var(--soft);
+		font-size: 13px;
+	}
+	.say p {
+		font-size: 15px;
+		line-height: 1.65;
+		color: var(--mute);
+	}
+	.say b {
+		font-weight: 600;
+		color: #000;
 	}
 	.kpis {
 		display: grid;
 		grid-template-columns: repeat(4, minmax(0, 1fr));
 		gap: 12px;
-		margin-top: 32px;
 	}
 	.two {
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 12px;
 		margin-top: 32px;
+	}
+	.go {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-top: 22px;
+	}
+	.pill {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 14px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		background: #fff;
+		font-size: 13.5px;
+		color: inherit;
+		text-decoration: none;
+	}
+	.pill:hover {
+		background: var(--soft);
+	}
+	.pill.pri {
+		background: var(--brand);
+		border-color: var(--brand);
+		color: #fff;
+	}
+	.pill.pri:hover {
+		background: #5d1451;
 	}
 	@media (max-width: 900px) {
 		.kpis {
