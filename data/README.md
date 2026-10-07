@@ -26,7 +26,9 @@ Os ficheiros `.jsonl` desta pasta são a fonte de verdade. Uma linha JSON por re
     python3 scripts/daily_prices.py --dry-run  # mostra as linhas sem escrever
 
 - O bodiva.ao não responde a ligações directas, por isso o script usa o Firecrawl CLI (1 crédito por corrida). A resposta em bruto fica em `.firecrawl/daily/`.
-- A data é a da "Última actualização" do relatório Power BI na mesma página. Se a BODIVA não actualizou, o script diz `unchanged` e não escreve nada.
+- O GitHub Actions corre o script de segunda a sexta às 17:47 de Luanda (`.github/workflows/daily-prices.yml`) e faz commit do ficheiro do dia como `github-actions[bot]`.
+- A data é o dia de sessão em Luanda. O script recusa correr antes das 15:30 e ao fim-de-semana, a não ser que se passe `--date`. A "Última actualização" da página é do relatório Power BI, não do ticker, por isso não serve como data.
+- Se todos os preços e variações forem iguais aos do último ficheiro, o ticker não mexeu (feriado ou sem publicação) e o script não escreve nada.
 - Se o ficheiro do dia já tiver preços diferentes desta fonte, o script pára. `--force` substitui só as linhas do ticker e mantém as de outras fontes (BDV e Bilhetes).
 - Um código de acção novo no ticker faz o script falhar até ser adicionado a `STOCKS`.
 - O BDV e as taxas dos Bilhetes não estão no ticker da BODIVA. Continuam a vir só do seed.
