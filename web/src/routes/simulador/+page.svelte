@@ -189,35 +189,6 @@
 		font-size: 12.5px;
 		color: var(--mute);
 	}
-	.fld {
-		display: grid;
-		gap: 6px;
-		margin-bottom: 16px;
-	}
-	.fld label {
-		font-size: 12.5px;
-		color: var(--mute);
-	}
-	.fld input,
-	.fld select {
-		font: inherit;
-		color: var(--ink);
-		background: var(--bg);
-		border: 1px solid var(--line);
-		border-radius: 8px;
-		padding: 9px 12px;
-		min-width: 0;
-		width: 100%;
-	}
-	.fld input {
-		font-variant-numeric: tabular-nums;
-	}
-	.fld input:focus-visible,
-	.fld select:focus-visible {
-		border-color: var(--brand);
-		outline: none;
-		box-shadow: 0 0 0 3px var(--brand-soft);
-	}
 	.big {
 		font-family: var(--serif);
 		font-size: 44px;
