@@ -1,6 +1,6 @@
 import { loadLatestDaily, loadMembers, loadPricelists, loadTotals } from '#lib/server/data';
 import { stockName } from '#lib/instruments';
-import { shortBrokerName } from '#lib/brokers';
+import { logoPath, shortBrokerName } from '#lib/brokers';
 import { isCurrentPricelist, purchaseCost } from '#lib/fees';
 
 // O BNA é o banco central, não uma corretora.
@@ -54,7 +54,11 @@ export function load() {
 		.filter((m) => m.volume_mm_kz !== null)
 		.sort((a, b) => (b.volume_mm_kz ?? 0) - (a.volume_mm_kz ?? 0))
 		.slice(0, 5)
-		.map((m) => ({ name: shortBrokerName(m.name), volume: m.volume_mm_kz ?? 0 }));
+		.map((m) => ({
+			name: shortBrokerName(m.name),
+			logo: logoPath(m.member),
+			volume: m.volume_mm_kz ?? 0
+		}));
 
 	const topByAccounts = members
 		.filter((m) => m.accounts !== null && m.accounts_share_pct !== null)
