@@ -7,17 +7,17 @@
 		source,
 		children
 	}: {
-		title: string;
+		title?: string;
 		subtitle?: string;
 		source?: string;
-		children: Snippet;
+		children?: Snippet;
 	} = $props();
 </script>
 
 <article class="card">
-	<h3>{title}</h3>
+	{#if title}<h3>{title}</h3>{/if}
 	{#if subtitle}<p class="sub">{subtitle}</p>{/if}
-	<div class="body">{@render children()}</div>
+	{#if children}<div class="body" class:headed={title}>{@render children()}</div>{/if}
 	{#if source}<p class="src">Fonte: {source}</p>{/if}
 </article>
 
@@ -44,8 +44,10 @@
 		color: var(--mute);
 	}
 	.body {
-		margin-top: 16px;
 		min-width: 0;
+	}
+	.headed {
+		margin-top: 16px;
 	}
 	.src {
 		margin: auto 0 0;
