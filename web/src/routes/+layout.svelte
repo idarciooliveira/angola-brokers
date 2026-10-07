@@ -7,7 +7,11 @@
 
 	let { data, children }: LayoutProps = $props();
 
-	const sections = [{ href: '/', label: 'Resumo' }];
+	const sections = [
+		{ href: '/', label: 'Resumo' },
+		{ href: '/mercado', label: 'Mercado' },
+		{ href: '/corretoras', label: 'Corretoras' }
+	];
 
 	const isCurrent = (href: string) =>
 		href === '/' ? page.url.pathname === '/' : page.url.pathname.startsWith(href);
