@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
 	import Card from '#lib/ui/Card.svelte';
+	import Seg from '#lib/ui/Seg.svelte';
 	import FreshnessBadge from '#lib/ui/FreshnessBadge.svelte';
 	import ScrollTable from '#lib/ui/ScrollTable.svelte';
 	import SourceNote from '#lib/ui/SourceNote.svelte';
@@ -11,13 +12,13 @@
 	let { data }: PageProps = $props();
 
 	let amount = $state<number | null>(5000000);
-	let onlyCurrent = $state(true);
+	let filter = $state<'ok' | 'all'>('ok');
 	const open = new SvelteSet<string>();
 
 	const amountKz = $derived(amount !== null && Number.isFinite(amount) && amount > 0 ? amount : 0);
 
 	const rows = $derived.by(() => {
-		const visible = onlyCurrent ? data.brokers.filter((b) => b.current) : data.brokers;
+		const visible = filter === 'ok' ? data.brokers.filter((b) => b.current) : data.brokers;
 		return visible
 			.map((b) => ({ b, cost: purchaseCost(b, amountKz) }))
 			.sort((x, y) => x.cost.total - y.cost.total);
@@ -43,7 +44,7 @@
 </p>
 
 <div class="card-wrap">
-	<Card title="Custo da compra" source="Preçários das corretoras, verificados em {formatDate(data.checkedOn)}; contas e volume da BODIVA">
+	<Card source="Preçários das corretoras, verificados em {formatDate(data.checkedOn)}; contas e volume da BODIVA">
 		<div class="controls">
 			<div class="fld">
 				<label for="amt">Valor da compra (Kz)</label>
@@ -56,22 +57,14 @@
 					bind:value={amount}
 				/>
 			</div>
-			<div class="seg" role="group" aria-label="Que preçários mostrar">
-				<button
-					type="button"
-					aria-pressed={onlyCurrent ? 'true' : 'false'}
-					onclick={() => (onlyCurrent = true)}
-				>
-					Preçário actual
-				</button>
-				<button
-					type="button"
-					aria-pressed={onlyCurrent ? 'false' : 'true'}
-					onclick={() => (onlyCurrent = false)}
-				>
-					Todas
-				</button>
-			</div>
+			<Seg
+				options={[
+					{ value: 'ok', label: 'Preçário actual' },
+					{ value: 'all', label: 'Todas' }
+				]}
+				bind:value={filter}
+				label="Que preçários mostrar"
+			/>
 		</div>
 
 		<ScrollTable caption="Custo de comprar Obrigações do Tesouro por corretora">
@@ -163,17 +156,16 @@
 				{/each}
 			</tbody>
 		</ScrollTable>
+		<SourceNote>
+			Custo = comissão da corretora + BODIVA + CEVAMA + IVA de 14%. É só a compra, a venda custa
+			parecido. Os preçários mudam e alguns estão desactualizados, por isso confirma com a corretora.
+		</SourceNote>
+		<SourceNote variant="warn">
+			Com "Preçário actual" ficam de fora os preçários antigos, por confirmar ou sem data. "Todas"
+			mostra-os, com etiqueta.
+		</SourceNote>
 	</Card>
 </div>
-
-<SourceNote>
-	Custo = comissão da corretora + BODIVA + CEVAMA + IVA de 14%. É só a compra, a venda custa
-	parecido. Os preçários mudam e alguns estão desactualizados, por isso confirma com a corretora.
-</SourceNote>
-<SourceNote variant="warn">
-	Com "Preçário actual" ficam de fora os preçários antigos, por confirmar ou sem data. "Todas"
-	mostra-os, com etiqueta.
-</SourceNote>
 
 <style>
 	.crumb {
@@ -210,42 +202,9 @@
 		margin-bottom: 12px;
 	}
 	.fld {
-		display: grid;
-		gap: 6px;
 		width: 200px;
 		max-width: 100%;
-	}
-	.fld label {
-		font-size: 12.5px;
-		color: var(--mute);
-	}
-	.fld input {
-		font: inherit;
-		padding: 8px 10px;
-		border: 1px solid var(--line);
-		border-radius: 8px;
-		background: var(--bg);
-		color: var(--ink);
-		font-variant-numeric: tabular-nums;
-	}
-	.seg {
-		display: inline-flex;
-		background: var(--soft);
-		border-radius: 99px;
-		padding: 3px;
-	}
-	.seg button {
-		border: 0;
-		background: none;
-		padding: 6px 14px;
-		border-radius: 99px;
-		font: inherit;
-		font-size: 13px;
-		cursor: pointer;
-	}
-	.seg button[aria-pressed='true'] {
-		background: var(--bg);
-		box-shadow: 0 0 0 1px var(--line);
+		margin: 0;
 	}
 	.num {
 		font-variant-numeric: tabular-nums;
