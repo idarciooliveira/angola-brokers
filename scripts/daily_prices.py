@@ -2,16 +2,19 @@
 """Daily prices: scrapes the ticker on bodiva.ao/estatistica/dashboard and writes data/daily/YYYY-MM-DD.jsonl.
 
 bodiva.ao times out on a direct connection, so the page is fetched with the Firecrawl CLI and the raw response is kept in
-.firecrawl/daily/ for audit. The date comes from the "Última actualização" label of the Power BI report on the same page.
-BDV and the Bilhetes do Tesouro rates are not in this ticker, so this script does not write them.
+.firecrawl/daily/ for audit. Run it after the session closes (15:30 in Luanda): the date written is that day's session.
+The "Última actualização" label on the page belongs to the Power BI report, not the ticker, so it is not used.
+If every ticker price and change equals the previous day file, the ticker did not move (holiday, no publication) and
+nothing is written. BDV and the Bilhetes do Tesouro rates are not in this ticker, so this script does not write them.
 
     python3 scripts/daily_prices.py                       # scrape, write the day file, validate with build_db.py
-    python3 scripts/daily_prices.py --from FILE           # parse a saved Firecrawl JSON instead of scraping
+    python3 scripts/daily_prices.py --from FILE --date D  # parse a saved Firecrawl JSON for session D instead of scraping
     python3 scripts/daily_prices.py --dry-run             # print the rows, write nothing
     python3 scripts/daily_prices.py --force               # replace this script's rows in an existing day file
 """
 import argparse, datetime as dt, html as htmllib, json, re, subprocess, sys
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parent.parent
 URL = "https://www.bodiva.ao/estatistica/dashboard"
@@ -20,17 +23,26 @@ OUT = ROOT / "data" / "daily"
 # ticker code -> short code used in data/. A new share code makes the script fail until it is added here.
 STOCKS = {"SBAOAAAA": "SBA", "UNTLAAAA": "UNTL", "BCGAAAAA": "BCG", "ENSAAAAA": "ENSA", "BAIAAAAA": "BAI", "BFAAAAAA": "BFA",
           "BDVAAAAA": "BDV"}
+LUANDA, CLOSE = ZoneInfo("Africa/Luanda"), dt.time(15, 30)  # multilateral 09:00-15:00, bilateral until 15:30
 MIN_ROWS = 10  # the ticker had 18 instruments on 2026-10-05; far fewer means the page did not render
 
 TICKER_ITEM = re.compile(
     r'<h1 class="text-gray-50[^"]*">\s*([A-Z0-9]+)\s*</h1>.*?'   # instrument code
     r'<h1 class="font-normal[^"]*">\s*([\d.]+)\s*%?\s*</h1>.*?'   # price (the page sometimes appends a stray %)
     r'<span class="text-sm[^"]*font-bold">\s*(-?[\d.]+)\s*%?\s*</span>', re.S)
-UPDATED = re.compile(r"Última actualização (\d{1,2})/(\d{1,2})/(\d{4})")  # Power BI label, US order M/D/YYYY
 
 
 def now_utc():
     return dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def session_day():
+    now = dt.datetime.now(LUANDA)
+    if now.weekday() >= 5:
+        sys.exit("no session on weekends; pass --date to force a day")
+    if now.time() < CLOSE:
+        sys.exit(f"session still open in Luanda ({now:%H:%M}); run after 15:30 or pass --date")
+    return now.date().isoformat()
 
 
 def scrape():
@@ -53,14 +65,8 @@ def classify(code):
     return "corp_bond", code
 
 
-def parse(page, scraped_at, date=None):
+def parse(page, scraped_at, date):
     h = htmllib.unescape(page["html"])
-    if date is None:
-        m = UPDATED.search(h)
-        if not m:
-            sys.exit("no 'Última actualização' label on the page; pass --date if you know the trading day")
-        month, day, year = map(int, m.groups())
-        date = dt.date(year, month, day).isoformat()
     rows, seen = [], set()
     for code, price, chg in TICKER_ITEM.findall(h):
         if code in seen:  # the marquee repeats every item
@@ -73,7 +79,20 @@ def parse(page, scraped_at, date=None):
                          source=URL, scraped_at=scraped_at))
     if len(rows) < MIN_ROWS:
         sys.exit(f"only {len(rows)} ticker items found (expected at least {MIN_ROWS}); page probably did not render")
-    return date, rows
+    return rows
+
+
+def ticker_rows(path):
+    return {(r["kind"], r["code"]): (r["price"], r["change_pct"])
+            for r in map(json.loads, path.read_text(encoding="utf-8").splitlines()) if r["source"] == URL}
+
+
+def stale_since(date, rows):
+    """Returns the previous day file if the ticker shows exactly the same prices and changes, else None."""
+    prev = [f for f in sorted(OUT.glob("*.jsonl")) if f.stem < date]
+    if not prev:
+        return None
+    return prev[-1] if ticker_rows(prev[-1]) == {(r["kind"], r["code"]): (r["price"], r["change_pct"]) for r in rows} else None
 
 
 def merge(path, rows, force):
@@ -96,19 +115,23 @@ def merge(path, rows, force):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--from", dest="src", type=Path, help="saved Firecrawl JSON with an html field")
-    ap.add_argument("--date", help="override the trading day (YYYY-MM-DD) when the page has no update label")
+    ap.add_argument("--date", help="session day (YYYY-MM-DD); default is today in Luanda, after 15:30")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--force", action="store_true")
     a = ap.parse_args()
 
+    date = dt.date.fromisoformat(a.date).isoformat() if a.date else session_day()
     src = a.src or scrape()
     page = json.loads(src.read_text(encoding="utf-8"))
     scraped_at = dt.datetime.fromtimestamp(src.stat().st_mtime, dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    date, rows = parse(page, scraped_at, a.date and dt.date.fromisoformat(a.date).isoformat())
+    rows = parse(page, scraped_at, date)
 
     if a.dry_run:
         print("\n".join(json.dumps(r, ensure_ascii=False) for r in rows))
         print(f"{len(rows)} rows for {date} (dry run, nothing written)", file=sys.stderr)
+        return
+    if prev := stale_since(date, rows):
+        print(f"ticker unchanged since {prev.stem}; nothing written for {date}")
         return
     path = OUT / f"{date}.jsonl"
     merged, status = merge(path, rows, a.force)
