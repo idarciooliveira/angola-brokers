@@ -10,6 +10,8 @@ Painel do mercado BODIVA e comparador de preçários das corretoras angolanas.
 - `.github/workflows/daily-prices.yml`: corre o script diário depois do fecho e faz commit do ficheiro do dia.
 - `scripts/seed_from_firecrawl.py`: seed único, já corrido. Não voltar a correr sem motivo.
 - `docs/RESULTADOS.md`: análise das fontes e links dos preçários.
+- `web/`: site SvelteKit 3 com Svelte 5, pré-gerado com `adapter-static`. Lê `../data` no build (`src/lib/server/data.ts`). Imports internos com `#lib/...`, não `$lib`. Comandos: `npm run check`, `npm test`, `npm run build`.
+- `.github/workflows/check.yml`: valida `data/` e corre check, testes e build do site em cada push.
 - `prototypes/`: protótipos HTML estáticos, só para referência visual.
 - `.firecrawl/`: scrapes em bruto (ignorado pelo git).
 
