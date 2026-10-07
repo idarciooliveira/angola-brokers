@@ -10,7 +10,10 @@
 	const sections = [
 		{ href: '/', label: 'Resumo' },
 		{ href: '/mercado', label: 'Mercado' },
-		{ href: '/corretoras', label: 'Corretoras' }
+		{ href: '/corretoras', label: 'Corretoras' },
+		{ href: '/simulador', label: 'Simulador' },
+		{ href: '/aprender', label: 'Aprender' },
+		{ href: '/fontes', label: 'Fontes' }
 	];
 
 	const isCurrent = (href: string) =>
