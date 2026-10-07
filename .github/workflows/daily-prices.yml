@@ -1,0 +1,56 @@
+name: daily-prices
+
+on:
+  schedule:
+    # 16:47 UTC = 17:47 em Luanda, depois do fecho do balcão (15:30). Minuto fora da hora certa para evitar a fila do GitHub.
+    - cron: "47 16 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "Dia de sessão (AAAA-MM-DD). Vazio = hoje em Luanda"
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-prices
+  cancel-in-progress: false
+
+jobs:
+  prices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Instalar Firecrawl CLI
+        run: npm install -g firecrawl-cli@1.23.3
+
+      - name: Buscar preços
+        env:
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+          DATE: ${{ inputs.date }}
+        run: python3 scripts/daily_prices.py ${DATE:+--date "$DATE"}
+
+      - name: Commit do ficheiro do dia
+        run: |
+          git config core.hooksPath .githooks
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          changed=$(git status --porcelain --untracked-files=all)
+          if [ -z "$changed" ]; then echo "Nada novo."; exit 0; fi
+          if [ "$(echo "$changed" | wc -l)" -ne 1 ]; then echo "Esperava 1 ficheiro alterado:"; echo "$changed"; exit 1; fi
+          file=$(echo "$changed" | awk '{print $2}')
+          case "$file" in data/daily/*.jsonl) ;; *) echo "Ficheiro inesperado: $file"; exit 1 ;; esac
+          git add "$file"
+          git commit -m "data(daily): prices for $(basename "$file" .jsonl)"
+          git push
