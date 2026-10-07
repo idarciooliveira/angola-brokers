@@ -1,0 +1,20 @@
+#!/bin/sh
+# Regras da mensagem (ver CLAUDE.md):
+# 1. A primeira linha começa com um prefixo do git workflow: tipo(âmbito opcional): descrição
+# 2. Nenhuma linha atribui o commit ao Claude/Anthropic (Co-Authored-By, "Generated with Claude", etc.).
+
+msg="$1"
+first=$(grep -v '^#' "$msg" | sed -n '1p')
+types='feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert|data'
+
+if ! printf '%s\n' "$first" | grep -qE "^($types)(\([a-z0-9._/-]+\))?!?: .+"; then
+  echo "commit-msg: a primeira linha tem de começar por um prefixo, por exemplo 'feat(scripts): ...'" >&2
+  echo "  tipos aceites: $(echo $types | tr '|' ' ')" >&2
+  echo "  recebido: $first" >&2
+  exit 1
+fi
+
+if grep -v '^#' "$msg" | grep -qiE 'co-authored-by:.*(claude|anthropic)|noreply@anthropic\.com|generated with .*claude'; then
+  echo "commit-msg: a mensagem não pode atribuir o commit ao Claude/Anthropic." >&2
+  exit 1
+fi
