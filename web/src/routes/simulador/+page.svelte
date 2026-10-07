@@ -2,6 +2,7 @@
 	import { onMount, untrack } from 'svelte';
 	import { replaceState } from '$app/navigation';
 	import { page } from '$app/state';
+	import BrokerLogo from '#lib/ui/BrokerLogo.svelte';
 	import SourceNote from '#lib/ui/SourceNote.svelte';
 	import { purchaseCost } from '#lib/fees';
 	import { formatDate, formatKz, formatPct } from '#lib/format';
@@ -114,7 +115,13 @@
 			<b class="num down">{sim ? `− ${formatKz(sim.iac)}` : '—'}</b>
 		</div>
 		<div class="ln">
-			<span>Custo de compra, {broker?.broker ?? '—'}</span>
+			<span>
+				{#if broker}
+					<BrokerLogo src={broker.logo} name={broker.broker}>Custo de compra, {broker.broker}</BrokerLogo>
+				{:else}
+					Custo de compra, —
+				{/if}
+			</span>
 			<b class="num down">{sim ? `− ${formatKz(sim.purchaseCost)}` : '—'}</b>
 		</div>
 		<div class="ln tot">
