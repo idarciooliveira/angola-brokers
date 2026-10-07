@@ -44,7 +44,13 @@
 <footer>
 	<div class="wrap">
 		<p>
-			Dados da BODIVA e dos preçários das corretoras. Informação, não aconselhamento financeiro.
+			Informação, não aconselhamento financeiro. Um script lê o site da BODIVA e o dashboard
+			estatístico uma vez por dia útil. Os preçários das corretoras são revistos à mão e mostram a
+			data de cada um.
+		</p>
+		<p>
+			Fontes: bodiva.ao, preçários de cada corretora, guia de investimento da CMC. Regulador:
+			<a href="https://www.cmc.ao/pt-pt">cmc.ao</a>. <a href="/fontes">Ver de onde vem cada número</a>.
 		</p>
 	</div>
 </footer>
@@ -122,6 +128,12 @@
 		padding-block: 28px;
 		font-size: 12.5px;
 		color: var(--mute);
+	}
+	footer a {
+		color: var(--brand);
+	}
+	footer p + p {
+		margin-top: 6px;
 	}
 	@media (max-width: 900px) {
 		.stamp {
