@@ -1,0 +1,22 @@
+{"date": "2026-10-05", "kind": "stock", "code": "SBA", "price": 66500.0, "change_pct": -3.61, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-07T13:02:28Z"}
+{"date": "2026-10-05", "kind": "stock", "code": "UNTL", "price": 28150.0, "change_pct": -4.58, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-07T13:02:28Z"}
+{"date": "2026-10-05", "kind": "stock", "code": "BCG", "price": 19900.0, "change_pct": 0.25, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-07T13:02:28Z"}
+{"date": "2026-10-05", "kind": "stock", "code": "ENSA", "price": 23500.0, "change_pct": 0.86, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-07T13:02:28Z"}
+{"date": "2026-10-05", "kind": "stock", "code": "BAI", "price": 94000.0, "change_pct": -0.53, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-07T13:02:28Z"}
+{"date": "2026-10-05", "kind": "stock", "code": "BFA", "price": 95500.0, "change_pct": -1.95, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-07T13:02:28Z"}
+{"date": "2026-10-05", "kind": "ot", "code": "OJ08M30A", "price": 102.0, "change_pct": 0.49, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-07T13:02:28Z"}
+{"date": "2026-10-05", "kind": "ot", "code": "OJ10M28A", "price": 105.99, "change_pct": 2.9, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-07T13:02:28Z"}
+{"date": "2026-10-05", "kind": "ot", "code": "OH15I28C", "price": 100.0, "change_pct": 1.01, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-07T13:02:28Z"}
+{"date": "2026-10-05", "kind": "corp_bond", "code": "SNLEDOFB", "price": 102.0, "change_pct": 0.99, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-07T13:02:28Z"}
+{"date": "2026-10-05", "kind": "ot", "code": "OJ15G31A", "price": 103.5, "change_pct": 1.47, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-07T13:02:28Z"}
+{"date": "2026-10-05", "kind": "ot", "code": "OJ15O31A", "price": 102.0, "change_pct": 2.0, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-07T13:02:28Z"}
+{"date": "2026-10-05", "kind": "ot", "code": "OJ15D31A", "price": 100.2, "change_pct": 11.33, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-07T13:02:28Z"}
+{"date": "2026-10-05", "kind": "ot", "code": "OH19N27A", "price": 103.0, "change_pct": 3.13, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-07T13:02:28Z"}
+{"date": "2026-10-05", "kind": "ot", "code": "ON07A32A", "price": 116.0, "change_pct": 0.87, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-07T13:02:28Z"}
+{"date": "2026-10-05", "kind": "ot", "code": "OK15A33A", "price": 105.0, "change_pct": 1.94, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-07T13:02:28Z"}
+{"date": "2026-10-05", "kind": "ot", "code": "OJ15N30A", "price": 104.0, "change_pct": 4.0, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-07T13:02:28Z"}
+{"date": "2026-10-05", "kind": "ot", "code": "OJ15N31B", "price": 102.5, "change_pct": 0.99, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-07T13:02:28Z"}
+{"date": "2026-10-05", "kind": "stock", "code": "BDV", "price": 97000.0, "change_pct": 0.0, "source": "https://www.biccorretora.ao (copy of the BODIVA ticker)", "scraped_at": "2026-10-07T12:52:20Z", "note": "date inferred; other prices in that copy differ from dash.json"}
+{"date": "2026-10-05", "kind": "bt", "code": "BT91", "price": 17.5, "change_pct": null, "source": "https://www.biccorretora.ao (copy of the BODIVA ticker)", "scraped_at": "2026-10-07T12:52:20Z", "note": "price = annual rate in %; date inferred"}
+{"date": "2026-10-05", "kind": "bt", "code": "BT182", "price": 9.48, "change_pct": null, "source": "https://www.biccorretora.ao (copy of the BODIVA ticker)", "scraped_at": "2026-10-07T12:52:20Z", "note": "price = annual rate in %; date inferred"}
+{"date": "2026-10-05", "kind": "bt", "code": "BT364", "price": 16.0, "change_pct": null, "source": "https://www.biccorretora.ao (copy of the BODIVA ticker)", "scraped_at": "2026-10-07T12:52:20Z", "note": "price = annual rate in %; date inferred"}
