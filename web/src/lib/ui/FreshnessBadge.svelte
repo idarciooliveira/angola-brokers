@@ -12,9 +12,9 @@
 	const when = $derived(date ? formatDate(date) : '');
 
 	const text = $derived.by(() => {
-		if (state === 'ok') return when ? `Verificado em ${when}` : 'Verificado';
-		if (state === 'stale') return when ? `Antigo, de ${when}` : 'Antigo';
-		return 'Por confirmar';
+		if (state === 'ok') return when || 'verificado';
+		if (state === 'stale') return when ? `antigo, ${when}` : 'antigo';
+		return 'por confirmar';
 	});
 </script>
 
