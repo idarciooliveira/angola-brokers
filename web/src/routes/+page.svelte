@@ -122,6 +122,8 @@
 		<Bars
 			items={data.topBrokers.map((b) => ({
 				label: b.name,
+				broker: true,
+				logo: b.logo,
 				value: b.volume,
 				valueLabel: formatNumber(b.volume, 0)
 			}))}
