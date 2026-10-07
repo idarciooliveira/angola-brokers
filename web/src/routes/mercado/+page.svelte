@@ -1,14 +1,57 @@
 <script lang="ts">
+	import Bars from '#lib/ui/Bars.svelte';
 	import Card from '#lib/ui/Card.svelte';
 	import Chip from '#lib/ui/Chip.svelte';
 	import ScrollTable from '#lib/ui/ScrollTable.svelte';
+	import SectionTitle from '#lib/ui/SectionTitle.svelte';
+	import Seg from '#lib/ui/Seg.svelte';
 	import SourceNote from '#lib/ui/SourceNote.svelte';
-	import { formatDate, formatKz, formatNumber, formatPct } from '#lib/format';
+	import { formatDate, formatNumber, formatPct } from '#lib/format';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
-	const years = ['2025', '2026'] as const;
+	type Product = 'bt' | 'ot' | 'corp' | 'ac';
+	let product = $state<Product>('bt');
+
+	const products: { value: Product; label: string }[] = [
+		{ value: 'bt', label: 'Bilhetes do Tesouro' },
+		{ value: 'ot', label: 'Obrigações do Tesouro' },
+		{ value: 'corp', label: 'Obrigações privadas' },
+		{ value: 'ac', label: 'Acções' }
+	];
+
+	const info: Record<Product, { title: string; hint: string; help: string }> = {
+		bt: {
+			title: 'Bilhetes do Tesouro',
+			hint: 'Taxa anual',
+			help: 'Ao comprar um Bilhete emprestas dinheiro ao Estado e recebes mais no fim do prazo. A taxa é conhecida à partida. O risco é o Estado angolano.'
+		},
+		ot: {
+			title: 'Obrigações do Tesouro',
+			hint: 'Preço em % do valor nominal',
+			help: 'Preço abaixo de 100 sai mais barato que o valor final. O ano de vencimento vem do código do título, por exemplo OJ10M28A vence em 2028.'
+		},
+		corp: {
+			title: 'Obrigações privadas',
+			hint: 'Preço em % do valor nominal',
+			help: 'Empréstimos a empresas, não ao Estado. O risco é o da empresa que emitiu.'
+		},
+		ac: {
+			title: 'Acções cotadas',
+			hint: 'Preço em kwanzas',
+			help: 'Comprar uma acção é ficar com um pedaço pequeno da empresa. O preço sobe e desce todos os dias e não há rendimento garantido.'
+		}
+	};
+
+	const current = $derived(
+		{ bt: data.bills, ot: data.ots, corp: data.corp, ac: data.stocks }[product]
+	);
+
+	const years = [
+		{ value: '2025', label: '2025' },
+		{ value: '2026', label: '2026' }
+	] as const;
 	let year = $state<'2025' | '2026'>('2026');
 	const membersOfYear = $derived(data.members[year]);
 	const membersSource = $derived(
@@ -22,59 +65,30 @@
 
 <p class="crumb">Preços do dia</p>
 <h1>Mercado</h1>
-<p class="lede">Preços e taxas do fecho de {formatDate(data.date)}. Cada cartão diz de onde vêm os números.</p>
+<p class="lede">Preços e taxas de {formatDate(data.date)}. Escolhe o tipo de produto.</p>
 
-<div class="grid">
-	<Card
-		title="Bilhetes do Tesouro"
-		subtitle="Taxa anual, por prazo."
-		source={data.bills.source}
-	>
-		<ScrollTable caption="Bilhetes do Tesouro por prazo">
-			<thead>
-				<tr><th>Prazo</th><th class="r">Taxa anual</th></tr>
-			</thead>
-			<tbody>
-				{#each data.bills.items as b (b.code)}
-					<tr>
-						<td>{b.days} dias</td>
-						<td class="r num">{formatPct(b.rate)}</td>
-					</tr>
-				{:else}
-					<tr><td colspan="2" class="mute">Sem dados neste fecho.</td></tr>
-				{/each}
-			</tbody>
-		</ScrollTable>
-		<SourceNote>
-			Ao comprar um Bilhete emprestas dinheiro ao Estado e recebes mais no fim do prazo.
-		</SourceNote>
-		{#if data.bills.unofficial.length > 0}
-			<SourceNote variant="warn">
-				Estes valores não vêm da BODIVA: {data.bills.unofficial.join(', ')}. Vêm da cópia do ticker em
-				biccorretora.ao e podem estar desactualizados.
-			</SourceNote>
-		{/if}
-	</Card>
+<div class="pick"><Seg options={products} bind:value={product} label="Tipo de produto" /></div>
 
-	<Card
-		title="Obrigações do Tesouro"
-		subtitle="Preço em % do valor nominal, por ano de vencimento."
-		source={data.ots.source}
-	>
+<SectionTitle title={info[product].title} hint={info[product].hint} />
+<Card source={current.source}>
+	{#if product === 'bt'}
+		<Bars
+			items={data.bills.items.map((b) => ({
+				label: `${b.days} dias`,
+				value: b.rate,
+				valueLabel: formatPct(b.rate)
+			}))}
+		/>
+	{:else if product === 'ot'}
 		<ScrollTable caption="Obrigações do Tesouro por ano de vencimento">
 			<thead>
-				<tr>
-					<th>Título</th>
-					<th>Vence</th>
-					<th class="r">Preço</th>
-					<th class="r">Variação</th>
-				</tr>
+				<tr><th>Título</th><th class="r">Vence</th><th class="r">Preço</th><th class="r">Variação</th></tr>
 			</thead>
 			<tbody>
 				{#each data.ots.items as o (o.code)}
 					<tr>
 						<td><strong>{o.code}</strong></td>
-						<td>{o.year ?? '—'}</td>
+						<td class="r num">{o.year ?? '—'}</td>
 						<td class="r num">{formatNumber(o.price, 2)}</td>
 						<td class="r"><Chip value={o.change} /></td>
 					</tr>
@@ -83,20 +97,7 @@
 				{/each}
 			</tbody>
 		</ScrollTable>
-		<SourceNote>O ano de vencimento vem do código do título. OJ10M28A vence em 2028.</SourceNote>
-		{#if data.ots.unofficial.length > 0}
-			<SourceNote variant="warn">
-				Estes preços não vêm da BODIVA: {data.ots.unofficial.join(', ')}. Vêm da cópia do ticker em
-				biccorretora.ao e podem estar desactualizados.
-			</SourceNote>
-		{/if}
-	</Card>
-
-	<Card
-		title="Obrigações privadas"
-		subtitle="Preço em % do valor nominal."
-		source={data.corp.source}
-	>
+	{:else if product === 'corp'}
 		<ScrollTable caption="Obrigações privadas">
 			<thead>
 				<tr><th>Título</th><th class="r">Preço</th><th class="r">Variação</th></tr>
@@ -113,19 +114,7 @@
 				{/each}
 			</tbody>
 		</ScrollTable>
-		{#if data.corp.unofficial.length > 0}
-			<SourceNote variant="warn">
-				Estes preços não vêm da BODIVA: {data.corp.unofficial.join(', ')}. Vêm da cópia do ticker em
-				biccorretora.ao e podem estar desactualizados.
-			</SourceNote>
-		{/if}
-	</Card>
-
-	<Card
-		title="Acções"
-		subtitle="Preço em kwanzas, do mais caro para o mais barato."
-		source={data.stocks.source}
-	>
+	{:else}
 		<ScrollTable caption="Acções cotadas na BODIVA">
 			<thead>
 				<tr><th>Acção</th><th class="r">Preço</th><th class="r">Variação</th></tr>
@@ -134,7 +123,7 @@
 				{#each data.stocks.items as s (s.code)}
 					<tr>
 						<td><strong>{s.code}</strong> <span class="mute">{s.name}</span></td>
-						<td class="r num">{formatKz(s.price)}</td>
+						<td class="r num">{formatNumber(s.price)}</td>
 						<td class="r"><Chip value={s.change} /></td>
 					</tr>
 				{:else}
@@ -142,63 +131,55 @@
 				{/each}
 			</tbody>
 		</ScrollTable>
-		{#if data.stocks.unofficial.length > 0}
-			<SourceNote variant="warn">
-				Estes preços não vêm da BODIVA: {data.stocks.unofficial.join(', ')}. Vêm da cópia do ticker em
-				biccorretora.ao e podem estar desactualizados.
-			</SourceNote>
-		{/if}
-	</Card>
+	{/if}
+</Card>
+{#if current.unofficial.length > 0}
+	<SourceNote variant="warn">
+		Estes valores não vêm da BODIVA: {current.unofficial.join(', ')}. Vêm da cópia do ticker em
+		biccorretora.ao e podem estar desactualizados.
+	</SourceNote>
+{/if}
+<SourceNote>{info[product].help}</SourceNote>
 
-	<div class="wide">
-		<Card
-			title="Contas, custódia e volume por membro"
-			subtitle="Mil milhões de kwanzas. Escolhe o ano."
-			source={membersSource}
-		>
-			<div class="seg" role="group" aria-label="Ano">
-				{#each years as y (y)}
-					<button type="button" aria-pressed={year === y} onclick={() => (year = y)}>{y}</button>
+<SectionTitle title="Contas, custódia e volume por membro" hint="Mil milhões de kwanzas" />
+<Card source={membersSource}>
+	<Seg options={[...years]} bind:value={year} label="Ano" />
+
+	<div class="table-gap">
+		<ScrollTable caption="Contas, custódia e volume por membro em {year}">
+			<thead>
+				<tr>
+					<th>Membro</th>
+					<th class="r">Contas</th>
+					<th class="r">Quota</th>
+					<th class="r">Custódia</th>
+					<th class="r">Volume</th>
+				</tr>
+			</thead>
+			<tbody>
+				{#each membersOfYear.rows as m (m.member)}
+					<tr>
+						<td>{m.name}</td>
+						<td class="r num">{formatNumber(m.accounts)}</td>
+						<td class="r num">{formatPct(m.accounts_share_pct)}</td>
+						<td class="r num">{formatNumber(m.custody_mm_kz, 2)}</td>
+						<td class="r num">{formatNumber(m.volume_mm_kz, 2)}</td>
+					</tr>
+				{:else}
+					<tr><td colspan="5" class="mute">Sem dados para {year}.</td></tr>
 				{/each}
-			</div>
-
-			<div class="table-gap">
-				<ScrollTable caption="Contas, custódia e volume por membro em {year}">
-					<thead>
-						<tr>
-							<th>Membro</th>
-							<th class="r">Contas</th>
-							<th class="r">Quota</th>
-							<th class="r">Custódia</th>
-							<th class="r">Volume</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each membersOfYear.rows as m (m.member)}
-							<tr>
-								<td>{m.name}</td>
-								<td class="r num">{formatNumber(m.accounts)}</td>
-								<td class="r num">{formatPct(m.accounts_share_pct)}</td>
-								<td class="r num">{formatNumber(m.custody_mm_kz, 2)}</td>
-								<td class="r num">{formatNumber(m.volume_mm_kz, 2)}</td>
-							</tr>
-						{:else}
-							<tr><td colspan="5" class="mute">Sem dados para {year}.</td></tr>
-						{/each}
-					</tbody>
-				</ScrollTable>
-			</div>
-
-			<SourceNote variant="warn">
-				"—" quer dizer que o dado não foi capturado do relatório. Em 2025 não há contas nem custódia.
-			</SourceNote>
-			<SourceNote>
-				Volume conta as duas pontas de cada operação. Uma compra entre dois membros soma no comprador e
-				no vendedor.
-			</SourceNote>
-		</Card>
+			</tbody>
+		</ScrollTable>
 	</div>
-</div>
+
+	<SourceNote variant="warn">
+		"—" quer dizer que o dado não foi capturado do relatório. Em 2025 não há contas nem custódia.
+	</SourceNote>
+	<SourceNote>
+		Volume conta as duas pontas de cada operação. Uma compra entre dois membros soma no comprador e
+		no vendedor.
+	</SourceNote>
+</Card>
 
 <style>
 	.crumb {
@@ -216,40 +197,10 @@
 		margin-top: 10px;
 		font-size: 15px;
 	}
-	.grid {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 12px;
-		margin-top: 32px;
-	}
-	.wide {
-		grid-column: 1 / -1;
-		min-width: 0;
+	.pick {
+		margin-top: 22px;
 	}
 	.table-gap {
 		margin-top: 14px;
-	}
-	.seg {
-		display: inline-flex;
-		background: var(--soft);
-		border-radius: 99px;
-		padding: 3px;
-	}
-	.seg button {
-		border: 0;
-		background: none;
-		padding: 6px 14px;
-		border-radius: 99px;
-		font-size: 13px;
-		cursor: pointer;
-	}
-	.seg button[aria-pressed='true'] {
-		background: #fff;
-		box-shadow: 0 0 0 1px var(--line);
-	}
-	@media (max-width: 900px) {
-		.grid {
-			grid-template-columns: minmax(0, 1fr);
-		}
 	}
 </style>
