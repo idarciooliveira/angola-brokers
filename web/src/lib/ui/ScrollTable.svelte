@@ -25,12 +25,14 @@
 		width: 100%;
 		border-collapse: collapse;
 	}
+	/* Só para leitores de ecrã. */
 	caption {
-		caption-side: top;
-		text-align: left;
-		padding-bottom: 8px;
-		font-size: 12.5px;
-		color: var(--mute);
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		white-space: nowrap;
 	}
 
 	/* Células vêm do conteúdo passado pelo pai, por isso precisam de :global. */
