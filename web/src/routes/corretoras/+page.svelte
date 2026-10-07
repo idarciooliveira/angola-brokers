@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
+	import BrokerLogo from '#lib/ui/BrokerLogo.svelte';
 	import Card from '#lib/ui/Card.svelte';
 	import Seg from '#lib/ui/Seg.svelte';
 	import FreshnessBadge from '#lib/ui/FreshnessBadge.svelte';
@@ -82,7 +83,9 @@
 				{#each rows as { b, cost }, i (b.broker)}
 					{@const isOpen = open.has(b.broker)}
 					<tr class:best={i === 0}>
-						<td><strong>{b.broker}</strong></td>
+						<td>
+							<BrokerLogo src={b.logo} name={b.broker}><strong>{b.broker}</strong></BrokerLogo>
+						</td>
 						<td class="r num"><strong>{formatKz(cost.total)}</strong></td>
 						<td>
 							<div class="bar">
