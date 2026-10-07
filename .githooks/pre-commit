@@ -1,0 +1,18 @@
+#!/bin/sh
+# Regras do repositório (ver CLAUDE.md):
+# 1. Cada commit leva exactamente um ficheiro.
+# 2. O autor e o committer não podem ser o Claude nem outra conta da Anthropic.
+
+n=$(git diff --cached --name-only | wc -l)
+if [ "$n" -ne 1 ]; then
+  echo "pre-commit: cada commit leva exactamente 1 ficheiro, estão $n em stage." >&2
+  git diff --cached --name-only | sed 's/^/  /' >&2
+  exit 1
+fi
+
+for who in GIT_AUTHOR_IDENT GIT_COMMITTER_IDENT; do
+  if git var "$who" | grep -qiE 'claude|anthropic'; then
+    echo "pre-commit: $who não pode ser o Claude/Anthropic: $(git var "$who")" >&2
+    exit 1
+  fi
+done
