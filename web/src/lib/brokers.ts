@@ -19,3 +19,13 @@ export const BROKER_MEMBER: Record<string, string> = {
 	'Lwei Brokers': 'LMB',
 	'Prospectum Capital': 'PCAP'
 };
+
+/** Nome da corretora em forma de URL: "Millennium Atlântico" vira "millennium-atlantico". */
+export function brokerSlug(name: string): string {
+	return name
+		.normalize('NFD')
+		.replace(/\p{Diacritic}/gu, '')
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, '-')
+		.replace(/^-|-$/g, '');
+}
