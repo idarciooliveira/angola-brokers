@@ -48,7 +48,8 @@ def session_day():
 def scrape():
     RAW.mkdir(parents=True, exist_ok=True)
     out = RAW / f"{now_utc().replace(':', '')}.json"
-    cmd = ["firecrawl", "scrape", URL, "--format", "html,markdown", "--wait-for", "8000", "-o", str(out)]
+    # --max-age 0: Firecrawl serves cached copies by default, which hides both new prices and site outages
+    cmd = ["firecrawl", "scrape", URL, "--format", "html,markdown", "--wait-for", "8000", "--max-age", "0", "-o", str(out)]
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0 or not out.exists():
         sys.exit(f"firecrawl failed ({r.returncode}): {r.stderr.strip() or r.stdout.strip()}")
@@ -123,6 +124,9 @@ def main():
     date = dt.date.fromisoformat(a.date).isoformat() if a.date else session_day()
     src = a.src or scrape()
     page = json.loads(src.read_text(encoding="utf-8"))
+    meta = page.get("metadata", {})
+    if not a.src and meta.get("cacheState") == "hit":
+        sys.exit(f"firecrawl returned a cached copy from {meta.get('cachedAt')}, not a fresh page")
     scraped_at = dt.datetime.fromtimestamp(src.stat().st_mtime, dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     rows = parse(page, scraped_at, date)
 
