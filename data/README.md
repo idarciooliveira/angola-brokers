@@ -20,6 +20,15 @@ Os ficheiros `.jsonl` desta pasta são a fonte de verdade. Uma linha JSON por re
 - Preçários novos são linhas novas com outro `checked_on`. Não se edita a linha antiga, para manter o histórico.
 - O `date` dos preços de 2026-10-05 foi inferido da "última actualização" do dashboard, e as taxas dos Bilhetes vêm da cópia do painel em biccorretora.ao. Está marcado em `note`.
 
-## Estado actual
+## Actualização diária
 
-`scripts/seed_from_firecrawl.py` gerou estes ficheiros uma vez a partir de `.firecrawl/` e do `prototypes/painel.html`. O script diário vai escrever os mesmos formatos.
+    python3 scripts/daily_prices.py            # busca o ticker, escreve data/daily/AAAA-MM-DD.jsonl e valida
+    python3 scripts/daily_prices.py --dry-run  # mostra as linhas sem escrever
+
+- O bodiva.ao não responde a ligações directas, por isso o script usa o Firecrawl CLI (1 crédito por corrida). A resposta em bruto fica em `.firecrawl/daily/`.
+- A data é a da "Última actualização" do relatório Power BI na mesma página. Se a BODIVA não actualizou, o script diz `unchanged` e não escreve nada.
+- Se o ficheiro do dia já tiver preços diferentes desta fonte, o script pára. `--force` substitui só as linhas do ticker e mantém as de outras fontes (BDV e Bilhetes).
+- Um código de acção novo no ticker faz o script falhar até ser adicionado a `STOCKS`.
+- O BDV e as taxas dos Bilhetes não estão no ticker da BODIVA. Continuam a vir só do seed.
+
+`scripts/seed_from_firecrawl.py` gerou os ficheiros iniciais a partir de `.firecrawl/` e do `prototypes/painel.html`. Já não é preciso correr.
