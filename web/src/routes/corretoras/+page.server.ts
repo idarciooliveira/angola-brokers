@@ -1,4 +1,4 @@
-import { BROKER_MEMBER } from '#lib/brokers';
+import { BROKER_MEMBER, logoPath } from '#lib/brokers';
 import { isCurrentPricelist } from '#lib/fees';
 import { loadMembers, loadPricelists } from '#lib/server/data';
 
@@ -14,6 +14,7 @@ export function load() {
 			const member = code ? members.get(code) : undefined;
 			return {
 				broker: p.broker,
+				logo: logoPath(code),
 				pct_public_debt_secondary: p.pct_public_debt_secondary,
 				min_kz: p.min_kz,
 				extra_fees: p.extra_fees,
