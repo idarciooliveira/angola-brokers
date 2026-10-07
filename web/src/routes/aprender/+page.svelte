@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Card from '#lib/ui/Card.svelte';
 	import ScrollTable from '#lib/ui/ScrollTable.svelte';
+	import SectionTitle from '#lib/ui/SectionTitle.svelte';
 	import SourceNote from '#lib/ui/SourceNote.svelte';
 
 	const products = [
@@ -60,7 +61,7 @@
 <h1>Aprender</h1>
 <p class="lede">Os quatro tipos de produto e os impostos que vais ver.</p>
 
-<h2>Onde pôr o dinheiro</h2>
+<SectionTitle title="Onde pôr o dinheiro" />
 <div class="grid four">
 	{#each products as p (p.title)}
 		<article class="card product">
@@ -76,8 +77,8 @@
 	{/each}
 </div>
 
-<h2>Impostos e taxas</h2>
-<Card title="Quanto se paga, e onde">
+<SectionTitle title="Impostos e taxas" />
+<Card>
 	<ScrollTable caption="Impostos e taxas aplicados aos investidores">
 		<thead>
 			<tr><th>Imposto</th><th class="r">Taxa</th><th>Onde se aplica</th></tr>
@@ -109,13 +110,10 @@
 	</SourceNote>
 </Card>
 
-<h2>Palavras comuns</h2>
+<SectionTitle title="Palavras comuns" />
 <div class="grid two">
 	{#each terms as t (t.title)}
-		<article class="card">
-			<h3>{t.title}</h3>
-			<p class="desc">{t.desc}</p>
-		</article>
+		<Card title={t.title} subtitle={t.desc} />
 	{/each}
 </div>
 
@@ -138,10 +136,6 @@
 		max-width: 62ch;
 		margin-top: 10px;
 		font-size: 15px;
-	}
-	h2 {
-		font-size: 26px;
-		margin: 44px 0 14px;
 	}
 	p {
 		margin: 0;
@@ -185,7 +179,6 @@
 	}
 	.line {
 		font-size: 13px;
-		font-weight: 500;
 		color: var(--ink);
 	}
 	.risk {
