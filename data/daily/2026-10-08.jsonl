@@ -1,0 +1,12 @@
+{"date": "2026-10-08", "kind": "stock", "code": "SBA", "price": 67990.0, "change_pct": 1.48, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-08T21:31:02Z"}
+{"date": "2026-10-08", "kind": "stock", "code": "UNTL", "price": 28190.0, "change_pct": -4.44, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-08T21:31:02Z"}
+{"date": "2026-10-08", "kind": "stock", "code": "BAI", "price": 96000.0, "change_pct": 2.67, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-08T21:31:02Z"}
+{"date": "2026-10-08", "kind": "stock", "code": "BCG", "price": 19830.0, "change_pct": -0.1, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-08T21:31:02Z"}
+{"date": "2026-10-08", "kind": "ot", "code": "ON07A32A", "price": 115.99, "change_pct": -0.01, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-08T21:31:02Z"}
+{"date": "2026-10-08", "kind": "stock", "code": "ENSA", "price": 23450.0, "change_pct": -0.21, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-08T21:31:02Z"}
+{"date": "2026-10-08", "kind": "ot", "code": "OJ15N31B", "price": 101.5, "change_pct": -0.98, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-08T21:31:02Z"}
+{"date": "2026-10-08", "kind": "ot", "code": "OJ15G31A", "price": 102.0, "change_pct": -1.45, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-08T21:31:02Z"}
+{"date": "2026-10-08", "kind": "ot", "code": "OM10G31A", "price": 103.7, "change_pct": 8.13, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-08T21:31:02Z"}
+{"date": "2026-10-08", "kind": "ot", "code": "OM15L32A", "price": 97.5, "change_pct": -0.51, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-08T21:31:02Z"}
+{"date": "2026-10-08", "kind": "ot", "code": "ON30J33A", "price": 105.0, "change_pct": 5.0, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-08T21:31:02Z"}
+{"date": "2026-10-08", "kind": "corp_bond", "code": "EL15S31A", "price": 101.0, "change_pct": 1.0, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-08T21:31:02Z"}
