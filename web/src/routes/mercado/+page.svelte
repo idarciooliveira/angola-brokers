@@ -8,7 +8,7 @@
 	import SectionTitle from '#lib/ui/SectionTitle.svelte';
 	import Seg from '#lib/ui/Seg.svelte';
 	import SourceNote from '#lib/ui/SourceNote.svelte';
-	import { formatDate, formatNumber, formatPct } from '#lib/format';
+	import { formatDate, formatNumber, formatPct, formatTerm } from '#lib/format';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -32,7 +32,7 @@
 		ot: {
 			title: 'Obrigações do Tesouro',
 			hint: 'Preço em % do valor nominal',
-			help: 'Preço abaixo de 100 sai mais barato que o valor final. O ano de vencimento vem do código do título, por exemplo OJ10M28A vence em 2028.'
+			help: 'O preço não é em kwanzas. É uma percentagem do valor nominal do título. Por cada 1 000 Kz de valor nominal, um preço de 102,00% custa 1 020 Kz e um de 97,50% custa 975 Kz. No vencimento recebes o valor nominal. O nome mostra o cupão, o juro anual sobre o valor nominal, e o ano de vencimento. A coluna Falta conta o tempo desde o dia do fecho.'
 		},
 		corp: {
 			title: 'Obrigações privadas',
@@ -82,20 +82,27 @@
 			}))}
 		/>
 	{:else if product === 'ot'}
-		<ScrollTable caption="Obrigações do Tesouro por ano de vencimento">
+		<ScrollTable caption="Obrigações do Tesouro por data de vencimento">
 			<thead>
-				<tr><th>Título</th><th class="r">Vence</th><th class="r">Preço</th><th class="r">Variação</th></tr>
+				<tr>
+					<th>Título</th>
+					<th class="r">Vence</th>
+					<th class="r">Falta</th>
+					<th class="r">Preço</th>
+					<th class="r">Variação</th>
+				</tr>
 			</thead>
 			<tbody>
 				{#each data.ots.items as o (o.code)}
 					<tr>
-						<td><strong>{o.code}</strong></td>
-						<td class="r num">{o.year ?? '—'}</td>
-						<td class="r num">{formatNumber(o.price, 2)}</td>
+						<td><strong>{o.code}</strong><span class="sub mute">{o.name}</span></td>
+						<td class="r num">{o.maturity ? formatDate(o.maturity) : (o.year ?? '—')}</td>
+						<td class="r num">{formatTerm(o.monthsLeft)}</td>
+						<td class="r num">{formatPct(o.price)}</td>
 						<td class="r"><Chip value={o.change} /></td>
 					</tr>
 				{:else}
-					<tr><td colspan="4" class="mute">Sem dados neste fecho.</td></tr>
+					<tr><td colspan="5" class="mute">Sem dados neste fecho.</td></tr>
 				{/each}
 			</tbody>
 		</ScrollTable>
@@ -201,6 +208,11 @@
 	}
 	.pick {
 		margin-top: 22px;
+	}
+	.sub {
+		display: block;
+		font-size: 12px;
+		white-space: nowrap;
 	}
 	.table-gap {
 		margin-top: 14px;
