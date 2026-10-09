@@ -10,6 +10,7 @@ DATA, DB = ROOT / "data", ROOT / "build" / "bodiva.db"
 # table -> (glob, columns, primary key). A column ending in ? may be null or absent.
 TABLES = {
  "prices": ("daily/*.jsonl", {"date": "TEXT", "kind": "TEXT", "code": "TEXT", "price": "REAL", "change_pct": "REAL?", "source": "TEXT", "scraped_at": "TEXT?", "note": "TEXT?"}, ("date", "kind", "code")),
+ "instruments": ("instruments/ot.jsonl", {"code": "TEXT", "type": "TEXT", "issued": "TEXT", "maturity": "TEXT", "coupon_pct": "REAL", "source": "TEXT", "checked_on": "TEXT"}, ("code",)),
  "member_stats": ("market/members-*.jsonl", {"as_of": "TEXT", "period": "TEXT", "member": "TEXT", "name": "TEXT", "accounts": "INTEGER?", "accounts_share_pct": "REAL?", "custody_mm_kz": "REAL?", "volume_mm_kz": "REAL?", "source": "TEXT", "note": "TEXT?"}, ("period", "member")),
  "market_totals": ("market/totals.jsonl", {"period": "TEXT", "total_kz_bi": "REAL", "bilateral_kz_bi": "REAL?", "multilateral_kz_bi": "REAL?", "accounts": "INTEGER?", "partial": "INTEGER", "as_of": "TEXT?", "source": "TEXT"}, ("period",)),
  "broker_pricelists": ("brokers/*.jsonl", {"broker": "TEXT", "checked_on": "TEXT", "pct_public_debt_secondary": "REAL", "min_kz": "REAL", "extra_fees": "TEXT", "dividend_fee": "TEXT?", "maintenance": "TEXT?", "pricelist_date": "TEXT?", "pricelist_date_raw": "TEXT?", "stale": "INTEGER", "uncertain": "INTEGER", "source_url": "TEXT?", "note": "TEXT?"}, ("broker", "checked_on")),
