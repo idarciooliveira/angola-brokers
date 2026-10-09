@@ -1,4 +1,5 @@
-import { loadLatestDaily, loadMembers, loadPricelists, loadTotals } from '#lib/server/data';
+import { loadDaily, loadLatestDaily, loadMembers, loadPricelists, loadTotals } from '#lib/server/data';
+import { latestOfKind } from '#lib/daily';
 import { stockName } from '#lib/instruments';
 import { logoPath, shortBrokerName } from '#lib/brokers';
 import { isCurrentPricelist, purchaseCost } from '#lib/fees';
@@ -11,6 +12,9 @@ const REFERENCE_KZ = 5_000_000;
 
 export function load() {
 	const { date, rows } = loadLatestDaily();
+	// O ticker do dia não traz os Bilhetes. Ficam as taxas do último dia que as teve.
+	const latestBills = latestOfKind(loadDaily(), 'bt');
+	const billRows = latestBills?.rows ?? [];
 	const totals = loadTotals();
 	const current = totals.find((t) => t.partial) ?? totals[totals.length - 1];
 	const previous = totals.find((t) => !t.partial && t.period === String(Number(current.period) - 1));
@@ -32,12 +36,10 @@ export function load() {
 		null
 	);
 
-	const bills = rows
-		.filter((r) => r.kind === 'bt')
-		.flatMap((r) => {
-			const m = /^BT(\d+)$/.exec(r.code);
-			return m ? [{ days: Number(m[1]), ratePct: r.price }] : [];
-		});
+	const bills = billRows.flatMap((r) => {
+		const m = /^BT(\d+)$/.exec(r.code);
+		return m ? [{ days: Number(m[1]), ratePct: r.price }] : [];
+	});
 	const bestBill = bills.reduce<(typeof bills)[number] | null>(
 		(b, x) => (b === null || x.ratePct > b.ratePct ? x : b),
 		null
@@ -47,7 +49,7 @@ export function load() {
 		null
 	);
 
-	const bt364 = rows.find((r) => r.kind === 'bt' && r.code === 'BT364')?.price ?? null;
+	const bt364 = billRows.find((r) => r.code === 'BT364')?.price ?? null;
 
 	const members = loadMembers(current.period).filter((m) => !NOT_BROKERS.has(m.member));
 	const topBrokers = members
@@ -81,6 +83,7 @@ export function load() {
 		date,
 		period: current.period,
 		bt364,
+		billsDate: latestBills?.date ?? null,
 		totalBi: current.total_kz_bi,
 		previousYear: previous && { period: previous.period, totalBi: previous.total_kz_bi },
 		accounts: current.accounts,
