@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import type { DailyPrice, MemberRow, Pricelist, YearTotal } from '#lib/types';
+import type { DailyPrice, MemberRow, Pricelist, TreasuryBond, YearTotal } from '#lib/types';
 
 function dataDir(): string {
 	return process.env.DATA_DIR ?? path.resolve(process.cwd(), '..', 'data');
@@ -66,6 +66,13 @@ export function loadLatestDaily(): { date: string; rows: DailyPrice[] } {
 	const days = loadDaily();
 	if (days.length === 0) throw new Error('Nenhum preço diário com linhas');
 	return days[days.length - 1];
+}
+
+/** Obrigações do Tesouro por código. */
+export function loadTreasuryBonds(): Map<string, TreasuryBond> {
+	const file = path.join(dataDir(), 'instruments', 'ot.jsonl');
+	const rows = readJsonl<TreasuryBond>(file, ['code', 'maturity', 'coupon_pct', 'source']);
+	return new Map(rows.map((row) => [row.code, row]));
 }
 
 export function loadMembers(period: string): MemberRow[] {
