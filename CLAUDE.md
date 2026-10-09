@@ -7,6 +7,7 @@ Painel do mercado BODIVA e comparador de preçários das corretoras angolanas.
 - `data/`: fonte de verdade em `.jsonl`. Regras e esquema em `README.md` (secção Dados).
 - `scripts/build_db.py`: valida `data/` e constrói `build/bodiva.db` (ignorado pelo git).
 - `scripts/daily_prices.py`: busca o ticker da BODIVA e escreve `data/daily/AAAA-MM-DD.jsonl`.
+- `scripts/ot_registry.py`: lê o boletim da BODIVA e acrescenta as Obrigações do Tesouro novas a `data/instruments/ot.jsonl`.
 - `.github/workflows/daily-prices.yml`: corre o script diário depois do fecho e faz commit do ficheiro do dia.
 - `scripts/seed_from_firecrawl.py`: seed único, já corrido. Não voltar a correr sem motivo.
 - `docs/RESULTADOS.md`: análise das fontes e links dos preçários.
