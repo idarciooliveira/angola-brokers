@@ -1,4 +1,5 @@
-import { loadLatestDaily, loadMembers, loadTreasuryBonds } from '#lib/server/data';
+import { latestOfKind } from '#lib/daily';
+import { loadDaily, loadLatestDaily, loadMembers, loadTreasuryBonds } from '#lib/server/data';
 import { bondName, maturityYear, monthsBetween, stockName } from '#lib/instruments';
 import { formatDate } from '#lib/format';
 import type { DailyPrice, MemberRow } from '#lib/types';
@@ -42,7 +43,9 @@ export function load() {
 	const { date, rows } = loadLatestDaily();
 	const byKind = (kind: DailyPrice['kind']) => rows.filter((r) => r.kind === kind);
 
-	const bills = byKind('bt');
+	// O ticker do dia não traz os Bilhetes. Ficam as taxas do último dia que as teve.
+	const latestBills = latestOfKind(loadDaily(), 'bt');
+	const bills = latestBills?.rows ?? [];
 	const billItems = bills
 		.map((r) => ({ code: r.code, days: Number(r.code.replace('BT', '')), rate: r.price }))
 		.sort((a, b) => a.days - b.days);
@@ -83,7 +86,7 @@ export function load() {
 
 	return {
 		date,
-		bills: { items: billItems, ...provenance(bills, date) },
+		bills: { items: billItems, ...provenance(bills, latestBills?.date ?? date) },
 		ots: { items: ots, ...provenance(byKind('ot'), date) },
 		corp: { items: corp, ...provenance(byKind('corp_bond'), date) },
 		stocks: { items: stocks, ...provenance(byKind('stock'), date) },
