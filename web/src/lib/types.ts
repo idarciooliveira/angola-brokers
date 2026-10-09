@@ -11,6 +11,17 @@ export interface DailyPrice {
 	note?: string;
 }
 
+/** Dados fixos de uma Obrigação do Tesouro, do boletim diário da BODIVA. Datas em AAAA-MM-DD. */
+export interface TreasuryBond {
+	code: string;
+	type: string;
+	issued: string;
+	maturity: string;
+	coupon_pct: number;
+	source: string;
+	checked_on: string;
+}
+
 export interface MemberRow {
 	as_of: string;
 	period: string;
