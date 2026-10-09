@@ -1,17 +1,19 @@
 import { BROKER_MEMBER, brokerSlug, logoPath } from '#lib/brokers';
 import { isCurrentPricelist, purchaseCost } from '#lib/fees';
-import { loadLatestDaily, loadPricelists } from '#lib/server/data';
+import { latestOfKind } from '#lib/daily';
+import { loadDaily, loadPricelists } from '#lib/server/data';
 
 /** Valor com que se ordenam as corretoras e se preenche o simulador. */
 const REFERENCE_KZ = 5_000_000;
 const DEFAULT_DAYS = 364;
 
 export function load() {
-	const { date, rows } = loadLatestDaily();
+	// O ticker do dia não traz os Bilhetes. Ficam as taxas do último dia que as teve.
+	const latest = latestOfKind(loadDaily(), 'bt');
+	const date = latest?.date ?? null;
 
 	// Código no formato BT91, BT364. O prazo em dias é o número do código.
-	const bills = rows
-		.filter((r) => r.kind === 'bt')
+	const bills = (latest?.rows ?? [])
 		.flatMap((r) => {
 			const m = /^BT(\d+)$/.exec(r.code);
 			return m ? [{ days: Number(m[1]), ratePct: r.price }] : [];
