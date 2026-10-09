@@ -5,7 +5,8 @@ import {
 	formatKz,
 	formatNumber,
 	formatPct,
-	formatSignedPct
+	formatSignedPct,
+	formatTerm
 } from '../src/lib/format';
 
 const NBSP = ' ';
@@ -121,5 +122,25 @@ describe('formatCompact', () => {
 	it('devolve — para null e undefined', () => {
 		expect(formatCompact(null)).toBe(EMPTY);
 		expect(formatCompact(undefined)).toBe(EMPTY);
+	});
+});
+
+describe('formatTerm', () => {
+	it('escreve anos e meses', () => {
+		expect(formatTerm(70)).toBe('5 anos e 10 meses');
+		expect(formatTerm(13)).toBe('1 ano e 1 mês');
+	});
+
+	it('omite a parte que é zero', () => {
+		expect(formatTerm(24)).toBe('2 anos');
+		expect(formatTerm(12)).toBe('1 ano');
+		expect(formatTerm(8)).toBe('8 meses');
+		expect(formatTerm(1)).toBe('1 mês');
+		expect(formatTerm(0)).toBe('menos de 1 mês');
+	});
+
+	it('devolve — para prazo em falta ou já vencido', () => {
+		expect(formatTerm(null)).toBe(EMPTY);
+		expect(formatTerm(-3)).toBe(EMPTY);
 	});
 });
