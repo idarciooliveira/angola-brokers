@@ -60,7 +60,9 @@
 	<Stat
 		label="Bilhete do Tesouro, 1 ano"
 		value={formatPct(data.bt364)}
-		hint="ao ano, antes de imposto"
+		hint={data.billsDate
+			? `ao ano, antes de imposto, taxa de ${formatDate(data.billsDate)}`
+			: 'ao ano, antes de imposto'}
 	/>
 	<Stat
 		label="Corretora mais barata"
