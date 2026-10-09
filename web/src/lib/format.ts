@@ -91,6 +91,17 @@ export function formatDate(iso: string | null | undefined): string {
 	return `${m[3]}/${m[2]}/${m[1]}`;
 }
 
+/** Prazo em meses como texto. `5 anos e 10 meses`, `1 ano`, `8 meses`, `menos de 1 mês`. */
+export function formatTerm(months: Maybe): string {
+	if (!isFiniteNumber(months) || months < 0) return EMPTY;
+	const years = Math.floor(months / 12);
+	const rest = months % 12;
+	const y = `${years} ${years === 1 ? 'ano' : 'anos'}`;
+	const m = `${rest} ${rest === 1 ? 'mês' : 'meses'}`;
+	if (years === 0) return rest === 0 ? 'menos de 1 mês' : m;
+	return rest === 0 ? y : `${y} e ${m}`;
+}
+
 /** Notação compacta do Intl pt-AO: `2,5 mM` (mil milhões), `5 M`, `12 mil`. */
 export function formatCompact(n: Maybe, digits = 2): string {
 	if (!isFiniteNumber(n)) return EMPTY;
