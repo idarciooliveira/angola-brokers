@@ -6,7 +6,7 @@
 	import FreshnessBadge from '#lib/ui/FreshnessBadge.svelte';
 	import ScrollTable from '#lib/ui/ScrollTable.svelte';
 	import SourceNote from '#lib/ui/SourceNote.svelte';
-	import { purchaseCost } from '#lib/fees';
+	import { BODIVA_MIN_KZ, BODIVA_RATE, purchaseCost } from '#lib/fees';
 	import { formatDate, formatKz, formatNumber, formatPct } from '#lib/format';
 	import type { PageProps } from './$types';
 
@@ -17,6 +17,9 @@
 	const open = new SvelteSet<string>();
 
 	const amountKz = $derived(amount !== null && Number.isFinite(amount) && amount > 0 ? amount : 0);
+
+	// Abaixo deste valor a BODIVA cobra o mínimo por ordem e o custo em % sobe.
+	const bodivaMinUntil = BODIVA_MIN_KZ / BODIVA_RATE;
 
 	const rows = $derived.by(() => {
 		const visible = filter === 'ok' ? data.brokers.filter((b) => b.current) : data.brokers;
@@ -67,6 +70,13 @@
 				label="Que preçários mostrar"
 			/>
 		</div>
+		{#if amountKz > 0 && amountKz < bodivaMinUntil}
+			<SourceNote variant="warn">
+				Abaixo de {formatKz(bodivaMinUntil)} a BODIVA cobra o mínimo de {formatKz(BODIVA_MIN_KZ)} por
+				ordem, e algumas corretoras têm comissão mínima. Em compras pequenas estes mínimos pesam mais do
+				que as percentagens, por isso o custo em % do valor sobe e a ordem da tabela muda.
+			</SourceNote>
+		{/if}
 
 		<ScrollTable caption="Custo de comprar Obrigações do Tesouro por corretora">
 			<thead>
@@ -80,88 +90,94 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each rows as { b, cost }, i (b.broker)}
-					{@const isOpen = open.has(b.broker)}
-					<tr class:best={i === 0}>
-						<td>
-							<BrokerLogo src={b.logo} name={b.broker}><strong>{b.broker}</strong></BrokerLogo>
-						</td>
-						<td class="r num"><strong>{formatKz(cost.total)}</strong></td>
-						<td>
-							<div class="bar">
-								<i style:width="{maxTotal > 0 ? (cost.total / maxTotal) * 100 : 0}%"></i>
-							</div>
-						</td>
-						<td class="r num">{amountKz > 0 ? formatPct((cost.total / amountKz) * 100) : '—'}</td>
-						<td>
-							{#if b.stale}
-								<FreshnessBadge state="stale" date={b.pricelist_date ?? undefined} />
-							{:else if b.uncertain}
-								<span
-									title="O preçário não diz se a BODIVA e a CEVAMA estão incluídas. O custo conta as duas."
-								>
-									<FreshnessBadge state="uncertain" />
-								</span>
-							{:else if b.pricelist_date === null}
-								<span class="badge q">sem data</span>
-							{:else}
-								<FreshnessBadge state="ok" date={b.pricelist_date} />
-							{/if}
-						</td>
-						<td class="r">
-							<button
-								type="button"
-								class="more"
-								aria-expanded={isOpen ? 'true' : 'false'}
-								onclick={() => toggle(b.broker)}
-							>
-								{isOpen ? 'Menos' : 'Detalhes'}
-							</button>
-						</td>
+				{#if amountKz === 0}
+					<tr>
+						<td colspan="6" class="empty">Escreve o valor da compra para ver o custo em cada corretora.</td>
 					</tr>
-					{#if isOpen}
-						<tr class="det">
-							<td colspan="6">
-								<div class="dl">
-									<div>
-										<span>Contas em 2026</span>
-										{b.accounts === null ? 'não capturado' : formatNumber(b.accounts)}
-									</div>
-									<div>
-										<span>Volume em 2026 (mil milhões de Kz)</span>
-										{b.volume_mm_kz === null ? 'não capturado' : formatNumber(b.volume_mm_kz, 0)}
-									</div>
-									<div>
-										<span>Comissão sobre juros</span>
-										{b.dividend_fee ?? '—'}
-									</div>
-									<div>
-										<span>Manutenção de conta</span>
-										{b.maintenance ?? '—'}
-									</div>
-									<div>
-										<span>Preçário verificado em</span>
-										{formatDate(b.checked_on)}
-									</div>
-									<div>
-										<span>Preçário</span>
-										{#if b.source_url}
-											<a href={b.source_url} target="_blank" rel="noopener noreferrer">Ver preçário</a>
-										{:else}
-											sem link
-										{/if}
-									</div>
+				{:else}
+					{#each rows as { b, cost }, i (b.broker)}
+						{@const isOpen = open.has(b.broker)}
+						<tr class:best={i === 0}>
+							<td>
+								<BrokerLogo src={b.logo} name={b.broker}><strong>{b.broker}</strong></BrokerLogo>
+							</td>
+							<td class="r num"><strong>{formatKz(cost.total)}</strong></td>
+							<td>
+								<div class="bar">
+									<i style:width="{maxTotal > 0 ? (cost.total / maxTotal) * 100 : 0}%"></i>
 								</div>
-								{#if b.note}<p class="obs">{b.note}</p>{/if}
+							</td>
+							<td class="r num">{formatPct((cost.total / amountKz) * 100)}</td>
+							<td>
+								{#if b.stale}
+									<FreshnessBadge state="stale" date={b.pricelist_date ?? undefined} />
+								{:else if b.uncertain}
+									<span
+										title="O preçário não diz se a BODIVA e a CEVAMA estão incluídas. O custo conta as duas."
+									>
+										<FreshnessBadge state="uncertain" />
+									</span>
+								{:else if b.pricelist_date === null}
+									<span class="badge q">sem data</span>
+								{:else}
+									<FreshnessBadge state="ok" date={b.pricelist_date} />
+								{/if}
+							</td>
+							<td class="r">
+								<button
+									type="button"
+									class="more"
+									aria-expanded={isOpen ? 'true' : 'false'}
+									onclick={() => toggle(b.broker)}
+								>
+									{isOpen ? 'Menos' : 'Detalhes'}
+								</button>
 							</td>
 						</tr>
-					{/if}
-				{/each}
+						{#if isOpen}
+							<tr class="det">
+								<td colspan="6">
+									<div class="dl">
+										<div>
+											<span>Contas em 2026</span>
+											{b.accounts === null ? 'não capturado' : formatNumber(b.accounts)}
+										</div>
+										<div>
+											<span>Volume em 2026 (mil milhões de Kz)</span>
+											{b.volume_mm_kz === null ? 'não capturado' : formatNumber(b.volume_mm_kz, 0)}
+										</div>
+										<div>
+											<span>Comissão sobre juros</span>
+											{b.dividend_fee ?? '—'}
+										</div>
+										<div>
+											<span>Manutenção de conta</span>
+											{b.maintenance ?? '—'}
+										</div>
+										<div>
+											<span>Preçário verificado em</span>
+											{formatDate(b.checked_on)}
+										</div>
+										<div>
+											<span>Preçário</span>
+											{#if b.source_url}
+												<a href={b.source_url} target="_blank" rel="noopener noreferrer">Ver preçário</a>
+											{:else}
+												sem link
+											{/if}
+										</div>
+									</div>
+									{#if b.note}<p class="obs">{b.note}</p>{/if}
+								</td>
+							</tr>
+						{/if}
+					{/each}
+				{/if}
 			</tbody>
 		</ScrollTable>
 		<SourceNote>
 			Custo = comissão da corretora + BODIVA + CEVAMA + IVA de 14%. É só a compra, a venda custa
-			parecido. Os preçários mudam e alguns estão desactualizados, por isso confirma com a corretora.
+			parecido. A barra compara com a corretora mais cara da lista. Os preçários mudam e alguns estão desactualizados, por isso confirma com a corretora.
 		</SourceNote>
 		<SourceNote variant="warn">
 			Com "Preçário actual" ficam de fora os preçários antigos, por confirmar ou sem data. "Todas"
@@ -261,6 +277,11 @@
 		display: block;
 		font-size: 12px;
 		color: var(--mute);
+	}
+	.empty {
+		padding: 18px 16px;
+		color: var(--mute);
+		text-align: center;
 	}
 	.obs {
 		margin-top: 12px;
