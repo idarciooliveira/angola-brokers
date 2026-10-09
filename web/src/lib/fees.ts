@@ -2,8 +2,8 @@ import type { Pricelist } from '#lib/types';
 
 export const IVA_RATE = 0.14;
 
-const BODIVA_RATE = 0.0525 / 100;
-const BODIVA_MIN_KZ = 1750;
+export const BODIVA_RATE = 0.0525 / 100;
+export const BODIVA_MIN_KZ = 1750;
 const CEVAMA_RATE = 0.026 / 100;
 
 export interface PurchaseCost {
