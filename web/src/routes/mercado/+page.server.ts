@@ -1,5 +1,5 @@
-import { loadLatestDaily, loadMembers } from '#lib/server/data';
-import { maturityYear, stockName } from '#lib/instruments';
+import { loadLatestDaily, loadMembers, loadTreasuryBonds } from '#lib/server/data';
+import { bondName, maturityYear, monthsBetween, stockName } from '#lib/instruments';
 import { formatDate } from '#lib/format';
 import type { DailyPrice, MemberRow } from '#lib/types';
 
@@ -47,15 +47,26 @@ export function load() {
 		.map((r) => ({ code: r.code, days: Number(r.code.replace('BT', '')), rate: r.price }))
 		.sort((a, b) => a.days - b.days);
 
-	// Sem ano (código fora do padrão) vai para o fim.
+	// Título que ainda não está em data/instruments/ot.jsonl mostra só o ano lido do código, sem nome nem prazo.
+	// Sem vencimento vai para o fim.
+	const bonds = loadTreasuryBonds();
 	const ots = byKind('ot')
-		.map((r) => ({
-			code: r.code,
-			year: maturityYear(r.code),
-			price: r.price,
-			change: r.change_pct
-		}))
-		.sort((a, b) => (a.year ?? 9999) - (b.year ?? 9999) || a.code.localeCompare(b.code));
+		.map((r) => {
+			const bond = bonds.get(r.code);
+			return {
+				code: r.code,
+				name: bond ? bondName(bond.coupon_pct, bond.maturity) : 'Obrigação do Tesouro',
+				maturity: bond?.maturity ?? null,
+				year: maturityYear(r.code),
+				monthsLeft: bond ? monthsBetween(date, bond.maturity) : null,
+				price: r.price,
+				change: r.change_pct
+			};
+		})
+		.sort(
+			(a, b) =>
+				(a.maturity ?? '9999').localeCompare(b.maturity ?? '9999') || a.code.localeCompare(b.code)
+		);
 
 	const corp = byKind('corp_bond')
 		.map((r) => ({ code: r.code, price: r.price, change: r.change_pct }))
