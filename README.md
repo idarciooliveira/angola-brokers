@@ -1,5 +1,7 @@
 # angola-brokers
 
+<img src="assets/angola-brokers-logo-192x192.png" alt="Logótipo Angola Brokers" width="48" />
+
 Painel do mercado BODIVA e comparador de preçários das corretoras angolanas.
 
 ![Página Resumo do painel, com os dados de 05/10/2026 que vêm de `data/`](docs/img/painel-resumo.png)
