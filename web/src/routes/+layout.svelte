@@ -1,6 +1,5 @@
 <script lang="ts">
 	import '../styles/tokens.css';
-	import favicon from '#lib/assets/favicon.svg';
 	import { page } from '$app/state';
 	import { formatDate } from '#lib/format';
 	import type { LayoutProps } from './$types';
@@ -21,13 +20,15 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
+	<link rel="icon" type="image/png" sizes="64x64" href="/favicon.png" />
+	<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+	<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 	<title>Painel BODIVA</title>
 </svelte:head>
 
 <header class="top">
 	<div class="wrap bar">
-		<a class="logo" href="/"><i></i>Painel BODIVA</a>
+		<a class="logo" href="/"><img src="/icon-192.png" alt="" width="28" height="28" />Painel BODIVA</a>
 		<nav aria-label="Secções">
 			{#each sections as { href, label } (href)}
 				<a {href} aria-current={isCurrent(href) ? 'page' : undefined}>{label}</a>
@@ -83,11 +84,10 @@
 		white-space: nowrap;
 		text-decoration: none;
 	}
-	.logo i {
-		width: 10px;
-		height: 10px;
-		background: #fff;
-		display: inline-block;
+	.logo img {
+		width: 28px;
+		height: 28px;
+		display: block;
 	}
 	nav {
 		display: flex;
