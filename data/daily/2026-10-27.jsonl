@@ -1,0 +1,13 @@
+{"date": "2026-10-27", "kind": "stock", "code": "SBA", "price": 61000.0, "change_pct": -4.84, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-27T20:59:25Z"}
+{"date": "2026-10-27", "kind": "stock", "code": "BCG", "price": 19749.0, "change_pct": 3.4, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-27T20:59:25Z"}
+{"date": "2026-10-27", "kind": "ot", "code": "OI15F30A", "price": 101.98, "change_pct": 0.08, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-27T20:59:25Z"}
+{"date": "2026-10-27", "kind": "ot", "code": "OO01I34A", "price": 136.0, "change_pct": 10.12, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-27T20:59:25Z"}
+{"date": "2026-10-27", "kind": "ot", "code": "ON07A32A", "price": 116.0, "change_pct": 0.87, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-27T20:59:25Z"}
+{"date": "2026-10-27", "kind": "stock", "code": "BDV", "price": 100000.0, "change_pct": -0.1, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-27T20:59:25Z"}
+{"date": "2026-10-27", "kind": "stock", "code": "BFA", "price": 98500.0, "change_pct": -1.5, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-27T20:59:25Z"}
+{"date": "2026-10-27", "kind": "stock", "code": "BAI", "price": 97999.0, "change_pct": 1.08, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-27T20:59:25Z"}
+{"date": "2026-10-27", "kind": "ot", "code": "OJ15L31D", "price": 102.0, "change_pct": -0.49, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-27T20:59:25Z"}
+{"date": "2026-10-27", "kind": "ot", "code": "OL15M32A", "price": 97.0, "change_pct": -0.51, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-27T20:59:25Z"}
+{"date": "2026-10-27", "kind": "corp_bond", "code": "BAIODOFA", "price": 111.0, "change_pct": 0.91, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-27T20:59:25Z"}
+{"date": "2026-10-27", "kind": "corp_bond", "code": "EL15G34A", "price": 98.7, "change_pct": -0.3, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-27T20:59:25Z"}
+{"date": "2026-10-27", "kind": "ot", "code": "OL07A30A", "price": 108.0, "change_pct": 0.93, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-10-27T20:59:25Z"}
