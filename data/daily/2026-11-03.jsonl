@@ -1,0 +1,15 @@
+{"date": "2026-11-03", "kind": "stock", "code": "SBA", "price": 58010.0, "change_pct": -2.5, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-11-03T22:01:58Z"}
+{"date": "2026-11-03", "kind": "stock", "code": "UNTL", "price": 28010.0, "change_pct": -2.74, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-11-03T22:01:58Z"}
+{"date": "2026-11-03", "kind": "stock", "code": "BDV", "price": 98000.0, "change_pct": -3.92, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-11-03T22:01:58Z"}
+{"date": "2026-11-03", "kind": "stock", "code": "BCG", "price": 19500.0, "change_pct": -2.5, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-11-03T22:01:58Z"}
+{"date": "2026-11-03", "kind": "stock", "code": "BAI", "price": 95500.0, "change_pct": -0.52, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-11-03T22:01:58Z"}
+{"date": "2026-11-03", "kind": "stock", "code": "ENSA", "price": 22600.0, "change_pct": -0.44, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-11-03T22:01:58Z"}
+{"date": "2026-11-03", "kind": "stock", "code": "BFA", "price": 97800.0, "change_pct": -1.21, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-11-03T22:01:58Z"}
+{"date": "2026-11-03", "kind": "ot", "code": "OO01I34A", "price": 123.5, "change_pct": -8.52, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-11-03T22:01:58Z"}
+{"date": "2026-11-03", "kind": "ot", "code": "OI15F30A", "price": 102.0, "change_pct": 1.8, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-11-03T22:01:58Z"}
+{"date": "2026-11-03", "kind": "corp_bond", "code": "BAIODOFA", "price": 112.0, "change_pct": -2.61, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-11-03T22:01:58Z"}
+{"date": "2026-11-03", "kind": "corp_bond", "code": "BAIODOFB", "price": 102.5, "change_pct": 0.49, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-11-03T22:01:58Z"}
+{"date": "2026-11-03", "kind": "ot", "code": "OH15M29B", "price": 90.0, "change_pct": -10.0, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-11-03T22:01:58Z"}
+{"date": "2026-11-03", "kind": "ot", "code": "OJ05G29D", "price": 108.0, "change_pct": 0.01, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-11-03T22:01:58Z"}
+{"date": "2026-11-03", "kind": "ot", "code": "OK05A29B", "price": 101.28, "change_pct": -0.99, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-11-03T22:01:58Z"}
+{"date": "2026-11-03", "kind": "ot", "code": "OG15L28A", "price": 100.86, "change_pct": -1.49, "source": "https://www.bodiva.ao/estatistica/dashboard", "scraped_at": "2026-11-03T22:01:58Z"}
